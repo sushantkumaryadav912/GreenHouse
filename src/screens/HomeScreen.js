@@ -1,66 +1,220 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome'; // You can switch to MaterialIcons or another set
 
 const HomeScreen = () => {
-    const navigation = useNavigation();
-    const animatedValue = new Animated.Value(0);
+  // State to manage the status of devices
+  const [frontDoorLocked, setFrontDoorLocked] = useState(false);
+  const [sconcesOn, setSconcesOn] = useState(true);
+  const [overheadOn, setOverheadOn] = useState(false);
+  const [ceilingLightsOn, setCeilingLightsOn] = useState(true);
+  const [ceilingLightsBrightness, setCeilingLightsBrightness] = useState(90);
+  const [accentLightsOn, setAccentLightsOn] = useState(false);
+  const [smartFanOn, setSmartFanOn] = useState(false);
+  const [tableLightsOn, setTableLightsOn] = useState(true);
+  const [sideDoorClosed, setSideDoorClosed] = useState(true);
 
-    const handlePress = () => {
-        Animated.timing(animatedValue, {
-            toValue: 1,
-            duration: 500,
-            useNativeDriver: true,
-        }).start(() => {
-            navigation.navigate('NextScreen');
-        });
-    };
+  // Thermostat states
+  const [livingRoomTemp, setLivingRoomTemp] = useState(68);
+  const [livingRoomTarget, setLivingRoomTarget] = useState(70);
+  const [kitchenTemp, setKitchenTemp] = useState(72);
+  const [kitchenTarget, setKitchenTarget] = useState(70);
 
-    const rotateY = animatedValue.interpolate({
-        inputRange: [0, 1],
-        outputRange: ['0deg', '360deg'],
-    });
+  const toggleDoor = (setter) => setter(!frontDoorLocked);
+  const toggleLight = (setter) => setter((prev) => !prev);
+  const toggleFan = () => setSmartFanOn((prev) => !prev);
+  const toggleSideDoor = () => setSideDoorClosed((prev) => !prev);
 
-    return (
-        <View style={styles.container}>
-            <Animated.View style={[styles.box, { transform: [{ rotateY }] }]}>
-                <Text style={styles.text}>Home Screen</Text>
-            </Animated.View>
-            <TouchableOpacity style={styles.button} onPress={handlePress}>
-                <Text style={styles.buttonText}>Go to Next Screen</Text>
-            </TouchableOpacity>
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerText}>My Home</Text>
+        <View style={styles.headerIcons}>
+          <Icon name="volume-up" size={20} color="#000" />
+          <Icon name="plus" size={20} color="#000" style={styles.iconMargin} />
+          <Icon name="ellipsis-v" size={20} color="#000" />
         </View>
-    );
+      </View>
+
+      {/* Entry Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Entry</Text>
+        <View style={styles.row}>
+          <TouchableOpacity
+            style={styles.control}
+            onPress={() => toggleDoor(setFrontDoorLocked)}>
+            <Icon
+              name={frontDoorLocked ? 'lock' : 'unlock'}
+              size={30}
+              color={frontDoorLocked ? '#34C759' : '#FF2D55'}
+            />
+            <Text style={styles.controlText}>
+              Front Door {frontDoorLocked ? 'Locked' : 'Unlocked'}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.control}
+            onPress={() => toggleLight(setSconcesOn)}>
+            <Icon name="lightbulb-o" size={30} color={sconcesOn ? '#FFD60A' : '#8E8E93'} />
+            <Text style={styles.controlText}>Sconces {sconcesOn ? 'On' : 'Off'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.control}
+            onPress={() => toggleLight(setOverheadOn)}>
+            <Icon name="lightbulb-o" size={30} color={overheadOn ? '#FFD60A' : '#8E8E93'} />
+            <Text style={styles.controlText}>Overhead {overheadOn ? 'On' : 'Off'}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Living Room Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Living Room</Text>
+        <View style={styles.row}>
+          <View style={styles.control}>
+            <Text style={styles.tempText}>{livingRoomTemp}°</Text>
+            <Text style={styles.controlText}>
+              Thermostat Heating to {livingRoomTarget}°
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={styles.control}
+            onPress={() => toggleLight(setCeilingLightsOn)}>
+            <Icon name="lightbulb-o" size={30} color={ceilingLightsOn ? '#FFD60A' : '#8E8E93'} />
+            <Text style={styles.controlText}>
+              Ceiling Lights {ceilingLightsOn ? `${ceilingLightsBrightness}%` : 'Off'}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.control}
+            onPress={() => toggleLight(setAccentLightsOn)}>
+            <Icon name="lightbulb-o" size={30} color={accentLightsOn ? '#FFD60A' : '#8E8E93'} />
+            <Text style={styles.controlText}>Accent Lights {accentLightsOn ? 'On' : 'Off'}</Text>
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity
+          style={styles.control}
+          onPress={toggleFan}>
+          <Icon name="fan" size={30} color={smartFanOn ? '#34C759' : '#8E8E93'} />
+          <Text style={styles.controlText}>Smart Fan {smartFanOn ? 'On' : 'Off'}</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Kitchen Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Kitchen</Text>
+        <View style={styles.row}>
+          <View style={styles.control}>
+            <Text style={styles.tempText}>{kitchenTemp}°</Text>
+            <Text style={styles.controlText}>
+              Thermostat Cooling to {kitchenTarget}°
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={styles.control}
+            onPress={() => toggleLight(setTableLightsOn)}>
+            <Icon name="lightbulb-o" size={30} color={tableLightsOn ? '#FFD60A' : '#8E8E93'} />
+            <Text style={styles.controlText}>Table Lights {tableLightsOn ? 'On' : 'Off'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.control}
+            onPress={toggleSideDoor}>
+            <Icon name={sideDoorClosed ? 'door-closed' : 'door-open'} size={30} color={sideDoorClosed ? '#34C759' : '#FF2D55'} />
+            <Text style={styles.controlText}>Side Door {sideDoorClosed ? 'Closed' : 'Open'}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Bottom Navigation */}
+      <View style={styles.bottomNav}>
+        <TouchableOpacity>
+          <Icon name="home" size={20} color="#8E8E93" />
+          <Text style={styles.navText}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Icon name="cog" size={20} color="#8E8E93" />
+          <Text style={styles.navText}>Automation</Text>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Icon name="star" size={20} color="#8E8E93" />
+          <Text style={styles.navText}>Discover</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#f0f0f0',
-    },
-    box: {
-        width: 200,
-        height: 200,
-        backgroundColor: '#4CAF50',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    text: {
-        color: '#fff',
-        fontSize: 18,
-    },
-    button: {
-        padding: 10,
-        backgroundColor: '#2196F3',
-        borderRadius: 5,
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 16,
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#F5F5F5',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 10,
+    backgroundColor: '#E5E5EA',
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  headerIcons: {
+    flexDirection: 'row',
+  },
+  iconMargin: {
+    marginHorizontal: 10,
+  },
+  section: {
+    marginVertical: 10,
+    paddingHorizontal: 10,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 5,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  control: {
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    padding: 10,
+    width: '30%',
+    alignItems: 'center',
+  },
+  controlText: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 5,
+  },
+  tempText: {
+    fontSize: 24,
+    color: '#FF9500',
+    fontWeight: 'bold',
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E5EA',
+    backgroundColor: '#FFF',
+  },
+  navText: {
+    fontSize: 12,
+    textAlign: 'center',
+    marginTop: 5,
+  },
 });
 
 export default HomeScreen;
