@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -8,22 +8,10 @@ import {
   Switch,
   Platform,
   StatusBar,
+  Animated,
+  Easing,
 } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSpring,
-  withSequence,
-  withDelay,
-  interpolate,
-  Extrapolation,
-  runOnJS,
-} from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
-import { Canvas, Skia, Shadow, BlurMask, vec } from '@shopify/react-native-skia';
-import { BlurView } from 'expo-blur';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SETTING_ITEMS = [
   { id: '1', icon: 'notifications-outline', title: 'Notifications', hasSwitch: true },
@@ -37,26 +25,122 @@ const SETTING_ITEMS = [
 ];
 
 const SettingScreen = () => {
-  const insets = useSafeAreaInsets();
-  const headerAnimation = useSharedValue(0);
-  const settingsAnimation = useSharedValue(0);
-  const rotationValue = useSharedValue(0);
-  const buttonScale = useSharedValue(1);
+  // Animation values
+  const headerAnimation = useRef(new Animated.Value(0)).current;
+  const cardAnimation = useRef(new Animated.Value(0)).current;
+  const cardRotateX = useRef(new Animated.Value(0)).current;
+  const cardRotateY = useRef(new Animated.Value(0)).current;
+  const buttonScale = useRef(new Animated.Value(1)).current;
+  const settingsAnimation = useRef(new Animated.Value(0)).current;
+  const rotationAnimation = useRef(new Animated.Value(0)).current;
+  const fabAnimation = useRef(new Animated.Value(0)).current;
   
-  // 3D card rotation values
-  const rotateX = useSharedValue(0);
-  const rotateY = useSharedValue(0);
+  // For individual setting items
+  const itemAnimations = useRef(SETTING_ITEMS.map(() => new Animated.Value(0))).current;
+  
+  // Animation function
+  const animateButton = () => {
+    Animated.sequence([
+      Animated.timing(buttonScale, {
+        toValue: 0.9,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonScale, {
+        toValue: 1.1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonScale, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+  
+  // 3D card flip animation
+  const flip3DCard = () => {
+    animateButton();
+    
+    Animated.sequence([
+      Animated.timing(cardRotateY, {
+        toValue: 0.1,
+        duration: 200,
+        useNativeDriver: true,
+        easing: Easing.linear,
+      }),
+      Animated.timing(cardRotateY, {
+        toValue: -0.1,
+        duration: 400,
+        useNativeDriver: true,
+        easing: Easing.linear,
+      }),
+      Animated.timing(cardRotateY, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+        easing: Easing.linear,
+      }),
+    ]).start();
+  };
+  
+  // Continuous rotation animation
+  const startRotationAnimation = () => {
+    Animated.loop(
+      Animated.timing(rotationAnimation, {
+        toValue: 1,
+        duration: 10000,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      })
+    ).start();
+  };
   
   useEffect(() => {
     StatusBar.setBarStyle('light-content');
     
-    // Animate header
-    headerAnimation.value = withSpring(1, { damping: 15 });
+    // Start animations
+    Animated.parallel([
+      Animated.timing(headerAnimation, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+        easing: Easing.out(Easing.back(1.5)),
+      }),
+      Animated.timing(cardAnimation, {
+        toValue: 1,
+        duration: 800,
+        delay: 200,
+        useNativeDriver: true,
+        easing: Easing.out(Easing.back(1.5)),
+      }),
+      Animated.timing(settingsAnimation, {
+        toValue: 1,
+        duration: 800,
+        delay: 400,
+        useNativeDriver: true,
+        easing: Easing.out(Easing.back(1.2)),
+      }),
+      Animated.timing(fabAnimation, {
+        toValue: 1,
+        duration: 800,
+        delay: 800,
+        useNativeDriver: true,
+        easing: Easing.out(Easing.back(1.5)),
+      }),
+      ...itemAnimations.map((anim, index) => 
+        Animated.timing(anim, {
+          toValue: 1,
+          duration: 400,
+          delay: 500 + (index * 100),
+          useNativeDriver: true,
+          easing: Easing.out(Easing.back(1.2)),
+        })
+      ),
+    ]).start();
     
-    // Animate settings items with sequence
-    settingsAnimation.value = withDelay(400, withSpring(1, { damping: 12 }));
-    
-    // Start rotation animation
+    // Start rotation animation for background elements
     startRotationAnimation();
     
     return () => {
@@ -64,98 +148,55 @@ const SettingScreen = () => {
     };
   }, []);
   
-  const startRotationAnimation = () => {
-    rotationValue.value = withSequence(
-      withTiming(2 * Math.PI, { duration: 10000 }),
-      withTiming(0, { duration: 0 }),
-    );
-    
-    // Make this continuous
-    setTimeout(() => {
-      runOnJS(startRotationAnimation)();
-    }, 10000);
-  };
-  
-  const animateButton = () => {
-    buttonScale.value = withSequence(
-      withTiming(0.9, { duration: 100 }),
-      withTiming(1.1, { duration: 100 }),
-      withTiming(1, { duration: 200 }),
-    );
-  };
-  
-  const headerAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: headerAnimation.value,
-      transform: [
-        { translateY: interpolate(headerAnimation.value, [0, 1], [-50, 0]) },
-      ],
-    };
+  const spin = rotationAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
   });
   
-  const settingsAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: settingsAnimation.value,
-      transform: [
-        { translateY: interpolate(settingsAnimation.value, [0, 1], [100, 0]) },
-      ],
-    };
+  // Calculate 3D transforms
+  const cardYRotation = cardRotateY.interpolate({
+    inputRange: [-1, 0, 1],
+    outputRange: ['-30deg', '0deg', '30deg'],
   });
-  
-  const buttonAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: buttonScale.value }],
-    };
-  });
-  
-  const render3DCardPath = () => {
-    const width = 60;
-    const height = 60;
-    const path = Skia.Path.Make();
-    path.addRRect(Skia.RRectXY(Skia.Rect.Make(0, 0, width, height), 16, 16));
-    return path;
-  };
   
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      {/* Background gradient and 3D objects */}
-      <Canvas style={StyleSheet.absoluteFill}>
-        {/* Animated background shapes */}
-        <Animated.View
-          style={[
-            StyleSheet.absoluteFill,
-            {
-              transform: [{ rotate: `${rotationValue.value}rad` }],
-            },
-          ]}
-        >
-          {Array(5).fill(0).map((_, index) => {
-            const size = 100 + index * 40;
-            const x = 50 + index * 20;
-            const y = 100 + index * 30;
-            
-            return (
-              <Canvas key={index} style={{
-                position: 'absolute',
-                width: size,
-                height: size,
-                left: x,
-                top: y,
-              }}>
-                <BlurMask blur={20} style="normal" />
-                <Shadow dx={10} dy={10} blur={20} color="rgba(0, 0, 0, 0.2)" />
-                {render3DCardPath()}
-              </Canvas>
-            );
-          })}
-        </Animated.View>
-      </Canvas>
-
-      {/* Blur overlay for depth effect */}
-      <BlurView intensity={20} style={StyleSheet.absoluteFill} tint="dark" />
+    <View style={styles.container}>
+      {/* Background elements with rotation */}
+      <Animated.View style={[styles.backgroundElements, { transform: [{ rotate: spin }] }]}>
+        {[...Array(5)].map((_, index) => (
+          <View 
+            key={index}
+            style={[
+              styles.backgroundShape,
+              { 
+                width: 80 + (index * 20),
+                height: 80 + (index * 20),
+                left: 40 + (index * 30),
+                top: 100 + (index * 40),
+                backgroundColor: `rgba(66, 133, 244, ${0.1 - (index * 0.01)})`,
+              }
+            ]}
+          />
+        ))}
+      </Animated.View>
       
       {/* Header */}
-      <Animated.View style={[styles.header, headerAnimatedStyle]}>
+      <Animated.View 
+        style={[
+          styles.header,
+          { 
+            opacity: headerAnimation,
+            transform: [
+              { 
+                translateY: headerAnimation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [-50, 0],
+                }) 
+              }
+            ] 
+          }
+        ]}
+      >
         <Text style={styles.headerTitle}>Settings</Text>
         <TouchableOpacity style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#fff" />
@@ -167,10 +208,16 @@ const SettingScreen = () => {
         style={[
           styles.profileCard,
           {
+            opacity: cardAnimation,
             transform: [
+              { 
+                translateY: cardAnimation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [40, 0],
+                }) 
+              },
               { perspective: 800 },
-              { rotateX: `${rotateX.value}deg` },
-              { rotateY: `${rotateY.value}deg` },
+              { rotateY: cardYRotation },
             ],
           },
         ]}
@@ -185,18 +232,13 @@ const SettingScreen = () => {
             <Text style={styles.profileEmail}>john.doe@example.com</Text>
           </View>
         </View>
-        <Animated.View style={[styles.editButton, buttonAnimatedStyle]}>
-          <TouchableOpacity 
-            onPress={() => {
-              animateButton();
-              // Simulate 3D card flip
-              rotateY.value = withSequence(
-                withTiming(10, { duration: 200 }),
-                withTiming(-10, { duration: 400 }),
-                withTiming(0, { duration: 200 })
-              );
-            }}
-          >
+        <Animated.View 
+          style={[
+            styles.editButton, 
+            { transform: [{ scale: buttonScale }] }
+          ]}
+        >
+          <TouchableOpacity onPress={flip3DCard}>
             <Text style={styles.editButtonText}>Edit Profile</Text>
           </TouchableOpacity>
         </Animated.View>
@@ -204,32 +246,39 @@ const SettingScreen = () => {
       
       {/* Settings List */}
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <Animated.View style={[styles.settingsContainer, settingsAnimatedStyle]}>
+        <Animated.View 
+          style={[
+            styles.settingsContainer,
+            {
+              opacity: settingsAnimation,
+              transform: [
+                { 
+                  translateY: settingsAnimation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [100, 0],
+                  }) 
+                }
+              ],
+            }
+          ]}
+        >
           {SETTING_ITEMS.map((item, index) => (
             <Animated.View
               key={item.id}
               style={[
                 styles.settingItem,
                 {
-                  opacity: useSharedValue(0),
+                  opacity: itemAnimations[index],
                   transform: [
                     { 
-                      translateY: useAnimatedStyle(() => {
-                        return {
-                          translateY: withDelay(
-                            index * 100,
-                            withSpring(0, { damping: 15 })
-                          ),
-                        };
-                      }).transform[0].translateY 
-                    },
+                      translateY: itemAnimations[index].interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [50, 0],
+                      }) 
+                    }
                   ],
                 },
               ]}
-              entering={withDelay(
-                400 + index * 100,
-                withSpring({ opacity: 1, translateY: 0 }, { damping: 15 })
-              )}
             >
               <View style={styles.settingItemContent}>
                 <View style={styles.iconContainer}>
@@ -256,25 +305,43 @@ const SettingScreen = () => {
         style={[
           styles.floatingButton,
           {
+            opacity: fabAnimation,
             transform: [
-              { translateY: withSpring(0, { damping: 10 }) },
-              { scale: useSharedValue(1) },
+              { 
+                translateY: fabAnimation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [30, 0],
+                }) 
+              },
+              { 
+                scale: fabAnimation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 1],
+                }) 
+              },
             ],
           },
         ]}
-        entering={withDelay(
-          800,
-          withSpring({ opacity: 1, scale: 1 }, { damping: 5 })
-        )}
       >
         <TouchableOpacity
           onPress={() => {
-            // Simulate 3D button press
-            buttonScale.value = withSequence(
-              withTiming(0.8, { duration: 100 }),
-              withTiming(1.2, { duration: 100 }),
-              withTiming(1, { duration: 200 }),
-            );
+            Animated.sequence([
+              Animated.timing(buttonScale, {
+                toValue: 0.8,
+                duration: 100,
+                useNativeDriver: true,
+              }),
+              Animated.timing(buttonScale, {
+                toValue: 1.2,
+                duration: 100,
+                useNativeDriver: true,
+              }),
+              Animated.timing(buttonScale, {
+                toValue: 1,
+                duration: 200,
+                useNativeDriver: true,
+              }),
+            ]).start();
           }}
           style={styles.floatingButtonInner}
         >
@@ -289,6 +356,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#121212',
+    paddingTop: Platform.OS === 'ios' ? 50 : 20,
+  },
+  backgroundElements: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
+  backgroundShape: {
+    position: 'absolute',
+    borderRadius: 40,
+    backgroundColor: 'rgba(66, 133, 244, 0.08)',
   },
   header: {
     padding: 20,
