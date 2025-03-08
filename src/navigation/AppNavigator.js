@@ -5,6 +5,8 @@ import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
 import ResetPasswordScreen from '../screens/ResetPassword';
 import HomeScreen from '../screens/HomeScreen';
+import LeaderboardScreen from '../screens/LeaderboardScreen'; // Add this
+import AutomationScreen from '../screens/AutomationScreen'; // Add this
 
 const Stack = createStackNavigator();
 
@@ -16,6 +18,8 @@ export default function AppNavigator() {
       <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
       <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
+      <Stack.Screen name="Automation" component={AutomationScreen} />
     </Stack.Navigator>
   );
 }

@@ -7,6 +7,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; // You can switch to MaterialIcons or another set
+import { useRoute, useNavigation } from '@react-navigation/native'; // For detecting the current route
 
 const HomeScreen = () => {
   // State to manage the status of devices (unchanged)
@@ -25,6 +26,10 @@ const HomeScreen = () => {
   const [livingRoomTarget, setLivingRoomTarget] = useState(70);
   const [kitchenTemp, setKitchenTemp] = useState(72);
   const [kitchenTarget, setKitchenTarget] = useState(70);
+
+  // Get the current route and navigation
+  const route = useRoute();
+  const navigation = useNavigation();
 
   const toggleDoor = (setter) => setter(!frontDoorLocked);
   const toggleLight = (setter) => setter((prev) => !prev);
@@ -137,17 +142,47 @@ const HomeScreen = () => {
 
       {/* Bottom Navigation (Fixed at Bottom) */}
       <View style={styles.bottomNav}>
-        <TouchableOpacity>
-          <Icon name="home" size={20} color="#8E8E93" />
-          <Text style={styles.navText}>Home</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+          <Icon
+            name="home"
+            size={20}
+            color={route.name === 'Home' ? '#34C759' : '#8E8E93'}
+          />
+          <Text
+            style={[
+              styles.navText,
+              { color: route.name === 'Home' ? '#34C759' : '#8E8E93' },
+            ]}>
+            Home
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity>
-          <Icon name="star" size={20} color="#8E8E93" />
-          <Text style={styles.navText}>Leaderboard</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Leaderboard')}>
+          <Icon
+            name="star"
+            size={20}
+            color={route.name === 'Leaderboard' ? '#34C759' : '#8E8E93'}
+          />
+          <Text
+            style={[
+              styles.navText,
+              { color: route.name === 'Leaderboard' ? '#34C759' : '#8E8E93' },
+            ]}>
+            Leaderboard
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity>
-          <Icon name="cog" size={20} color="#8E8E93" />
-          <Text style={styles.navText}>Automation</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Automation')}>
+          <Icon
+            name="cog"
+            size={20}
+            color={route.name === 'Automation' ? '#34C759' : '#8E8E93'}
+          />
+          <Text
+            style={[
+              styles.navText,
+              { color: route.name === 'Automation' ? '#34C759' : '#8E8E93' },
+            ]}>
+            Automation
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -198,7 +233,6 @@ const styles = StyleSheet.create({
     width: '30%',
     alignItems: 'center',
     marginVertical: 10,
-
   },
   controlText: {
     fontSize: 14,
