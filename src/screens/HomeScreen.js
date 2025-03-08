@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; // You can switch to MaterialIcons or another set
 import { useRoute, useNavigation } from '@react-navigation/native'; // For detecting the current route
+import Bottomnav from './Bottomnav';
 
 const HomeScreen = () => {
   // State to manage the status of devices (unchanged)
@@ -141,50 +142,7 @@ const HomeScreen = () => {
       </View>
 
       {/* Bottom Navigation (Fixed at Bottom) */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <Icon
-            name="home"
-            size={20}
-            color={route.name === 'Home' ? '#34C759' : '#8E8E93'}
-          />
-          <Text
-            style={[
-              styles.navText,
-              { color: route.name === 'Home' ? '#34C759' : '#8E8E93' },
-            ]}>
-            Home
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Leaderboard')}>
-          <Icon
-            name="star"
-            size={20}
-            color={route.name === 'Leaderboard' ? '#34C759' : '#8E8E93'}
-          />
-          <Text
-            style={[
-              styles.navText,
-              { color: route.name === 'Leaderboard' ? '#34C759' : '#8E8E93' },
-            ]}>
-            Leaderboard
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Automation')}>
-          <Icon
-            name="cog"
-            size={20}
-            color={route.name === 'Automation' ? '#34C759' : '#8E8E93'}
-          />
-          <Text
-            style={[
-              styles.navText,
-              { color: route.name === 'Automation' ? '#34C759' : '#8E8E93' },
-            ]}>
-            Automation
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <Bottomnav />
     </SafeAreaView>
   );
 };
@@ -243,24 +201,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: '#FF9500',
     fontWeight: 'bold',
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 25,
-    borderTopWidth: 1,
-    borderTopColor: '#E5E5EA',
-    backgroundColor: '#FFF',
-    position: 'absolute', // Fix position at bottom
-    bottom: 0,
-    left: 0,
-    right: 0,
-    marginBottom: 0,
-  },
-  navText: {
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: 5,
   },
 });
 
