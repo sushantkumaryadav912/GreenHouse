@@ -142,12 +142,12 @@ const HomeScreen = () => {
           <Text style={styles.navText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity>
-          <Icon name="cog" size={20} color="#8E8E93" />
-          <Text style={styles.navText}>Automation</Text>
+          <Icon name="star" size={20} color="#8E8E93" />
+          <Text style={styles.navText}>Leaderboard</Text>
         </TouchableOpacity>
         <TouchableOpacity>
-          <Icon name="star" size={20} color="#8E8E93" />
-          <Text style={styles.navText}>Discover</Text>
+          <Icon name="cog" size={20} color="#8E8E93" />
+          <Text style={styles.navText}>Automation</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
