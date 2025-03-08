@@ -3,8 +3,12 @@ import { Text, Alert, TouchableOpacity, View } from 'react-native';
 import styled from 'styled-components/native';
 import { Picker } from '@react-native-picker/picker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { auth, db } from '../config/firebaseConfig'; 
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
-const SignupScreen = () => {
+const SignupScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [countryCode, setCountryCode] = useState('+1');
@@ -18,33 +22,60 @@ const SignupScreen = () => {
     if (/^\d{0,10}$/.test(text)) {
       setPhone(text);
     } else {
-      Alert.alert("Error", "Phone number cannot exceed 10 digits.");
+      Alert.alert('Error', 'Phone number cannot exceed 10 digits.');
     }
   };
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     if (!username) {
-      Alert.alert("Error", "Please enter your username.");
+      Alert.alert('Error', 'Please enter your username.');
       return;
     }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      Alert.alert("Error", "Please enter a valid email.");
+      Alert.alert('Error', 'Please enter a valid email.');
       return;
     }
     if (!phone) {
-      Alert.alert("Error", "Please enter your phone number.");
+      Alert.alert('Error', 'Please enter your phone number.');
       return;
     }
     if (!password) {
-      Alert.alert("Error", "Please enter your password.");
+      Alert.alert('Error', 'Please enter your password.');
       return;
     }
     if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match.");
+      Alert.alert('Error', 'Passwords do not match.');
       return;
     }
 
-    Alert.alert("Success", `Signed up as ${username}`);
+    try {
+      // Create user in Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Save user data in Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        username,
+        email,
+        phone: `${countryCode}${phone}`,
+        countryCode,
+        createdAt: new Date().toISOString(),
+      });
+
+      Alert.alert('Success', `Signed up as ${username}`);
+      navigation.navigate('Login');
+    } catch (error) {
+      let errorMessage = 'Something went wrong. Please try again.';
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = 'This email is already in use.';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = 'Invalid email format.';
+      } else if (error.code === 'auth/weak-password') {
+        errorMessage = 'Password should be at least 6 characters.';
+      }
+      Alert.alert('Error', errorMessage);
+      console.error(error);
+    }
   };
 
   return (
@@ -105,7 +136,11 @@ const SignupScreen = () => {
               style={{ flex: 1 }}
             />
             <EyeIconWrapper onPress={() => setPasswordVisible(!isPasswordVisible)}>
-              <MaterialIcons name={isPasswordVisible ? "visibility-off" : "visibility"} size={24} color="#707070" />
+              <MaterialIcons
+                name={isPasswordVisible ? 'visibility-off' : 'visibility'}
+                size={24}
+                color="#707070"
+              />
             </EyeIconWrapper>
           </PasswordInputWrapper>
         </InputWrapper>
@@ -121,7 +156,11 @@ const SignupScreen = () => {
               style={{ flex: 1 }}
             />
             <EyeIconWrapper onPress={() => setConfirmPasswordVisible(!isConfirmPasswordVisible)}>
-              <MaterialIcons name={isConfirmPasswordVisible ? "visibility-off" : "visibility"} size={24} color="#707070" />
+              <MaterialIcons
+                name={isConfirmPasswordVisible ? 'visibility-off' : 'visibility'}
+                size={24}
+                color="#707070"
+              />
             </EyeIconWrapper>
           </PasswordInputWrapper>
         </InputWrapper>
@@ -134,6 +173,7 @@ const SignupScreen = () => {
   );
 };
 
+// Styled components (unchanged)
 const Container = styled.View`
   flex: 1;
   justify-content: center;
