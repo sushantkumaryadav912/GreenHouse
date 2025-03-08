@@ -12,6 +12,7 @@ import {
   Easing,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const SETTING_ITEMS = [
   { id: '1', icon: 'notifications-outline', title: 'Notifications', hasSwitch: true },
@@ -494,3 +495,4 @@ const styles = StyleSheet.create({
 });
 
 export default SettingScreen;
+
