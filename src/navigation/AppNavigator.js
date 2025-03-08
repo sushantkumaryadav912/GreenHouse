@@ -19,7 +19,7 @@ export default function AppNavigator() {
       <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
-      <Stack.Screen name="Setting" component={SettingScreen} />
+      <Stack.Screen name="Settings" component={SettingScreen} />
     </Stack.Navigator>
   );
 }
