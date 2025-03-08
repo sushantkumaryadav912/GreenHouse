@@ -16,13 +16,6 @@ export default function AppNavigator() {
       <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
       <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="Chat" component={ChatScreen} />
-      <Stack.Screen name="CameraScreen" component={Camera} />
-      <Stack.Screen name="MenuScreen" component={MenuScreen} />
-      <Stack.Screen name="NewChat" component={Chat} />
-      <Stack.Screen name="Feed" component={Feed} />
-      <Stack.Screen name="Explore" component={Explore} />
-
     </Stack.Navigator>
   );
 }
