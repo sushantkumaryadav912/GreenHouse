@@ -10,7 +10,7 @@ const eventsData = [
   { id: '3', title: ' ok', description: 'Code, collaborate, and compete for awesome prizes.', imageUrl: require('../../assets/del.png') },
   { id: '4', title: 'Entrepreneur Workshop', description: 'Learn business skills from industry experts.', imageUrl: require('../../assets/del.png') },
   { id: '5', title: 'AI  2025', description: 'Explore the future of artificial intelligence.', imageUrl: require('../../assets/del.png') },
-  { id: '6', title: 'Networking Mixer', description: 'Connect with professionals in your industry.', imageUrl: require('../../assets/del.png') },
+  { id: '6', title: 'Networking', description: 'Connect with professionals in your industry.', imageUrl: require('../../assets/del.png') },
   { id: '7', title: 'Web Dev Bootcamp', description: 'Master web development in one weekend.', imageUrl: require('../../assets/del.png') },
   { id: '8', title: 'Innovation Expo', description: 'Showcase and discover groundbreaking ideas.', imageUrl: require('../../assets/del.png') },
   { id: '9', title: 'Tech Conference 2025', description: 'Join us for the latest in tech innovations and networking.', imageUrl: require('../../assets/del.png') },
