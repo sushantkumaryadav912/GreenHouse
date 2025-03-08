@@ -9,7 +9,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome'; // You can switch to MaterialIcons or another set
 
 const HomeScreen = () => {
-  // State to manage the status of devices
+  // State to manage the status of devices (unchanged)
   const [frontDoorLocked, setFrontDoorLocked] = useState(false);
   const [sconcesOn, setSconcesOn] = useState(true);
   const [overheadOn, setOverheadOn] = useState(false);
@@ -20,7 +20,7 @@ const HomeScreen = () => {
   const [tableLightsOn, setTableLightsOn] = useState(true);
   const [sideDoorClosed, setSideDoorClosed] = useState(true);
 
-  // Thermostat states
+  // Thermostat states (unchanged)
   const [livingRoomTemp, setLivingRoomTemp] = useState(68);
   const [livingRoomTarget, setLivingRoomTarget] = useState(70);
   const [kitchenTemp, setKitchenTemp] = useState(72);
@@ -33,106 +33,109 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerText}>My Home</Text>
-        <View style={styles.headerIcons}>
-          <Icon name="volume-up" size={20} color="#000" />
-          <Icon name="plus" size={20} color="#000" style={styles.iconMargin} />
-          <Icon name="ellipsis-v" size={20} color="#000" />
+      {/* Main Content */}
+      <View style={styles.content}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerText}>My Home</Text>
+          <View style={styles.headerIcons}>
+            <Icon name="volume-up" size={20} color="#000" />
+            <Icon name="plus" size={20} color="#000" style={styles.iconMargin} />
+            <Icon name="ellipsis-v" size={20} color="#000" />
+          </View>
         </View>
-      </View>
 
-      {/* Entry Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Entry</Text>
-        <View style={styles.row}>
-          <TouchableOpacity
-            style={styles.control}
-            onPress={() => toggleDoor(setFrontDoorLocked)}>
-            <Icon
-              name={frontDoorLocked ? 'lock' : 'unlock'}
-              size={30}
-              color={frontDoorLocked ? '#34C759' : '#FF2D55'}
-            />
-            <Text style={styles.controlText}>
-              Front Door {frontDoorLocked ? 'Locked' : 'Unlocked'}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.control}
-            onPress={() => toggleLight(setSconcesOn)}>
-            <Icon name="lightbulb-o" size={30} color={sconcesOn ? '#FFD60A' : '#8E8E93'} />
-            <Text style={styles.controlText}>Sconces {sconcesOn ? 'On' : 'Off'}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.control}
-            onPress={() => toggleLight(setOverheadOn)}>
-            <Icon name="lightbulb-o" size={30} color={overheadOn ? '#FFD60A' : '#8E8E93'} />
-            <Text style={styles.controlText}>Overhead {overheadOn ? 'On' : 'Off'}</Text>
-          </TouchableOpacity>
+        {/* Entry Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Entry</Text>
+          <View style={styles.row}>
+            <TouchableOpacity
+              style={styles.control}
+              onPress={() => toggleDoor(setFrontDoorLocked)}>
+              <Icon
+                name={frontDoorLocked ? 'lock' : 'unlock'}
+                size={30}
+                color={frontDoorLocked ? '#34C759' : '#FF2D55'}
+              />
+              <Text style={styles.controlText}>
+                Front Door {frontDoorLocked ? 'Locked' : 'Unlocked'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.control}
+              onPress={() => toggleLight(setSconcesOn)}>
+              <Icon name="lightbulb-o" size={30} color={sconcesOn ? '#FFD60A' : '#8E8E93'} />
+              <Text style={styles.controlText}>Sconces {sconcesOn ? 'On' : 'Off'}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.control}
+              onPress={() => toggleLight(setOverheadOn)}>
+              <Icon name="lightbulb-o" size={30} color={overheadOn ? '#FFD60A' : '#8E8E93'} />
+              <Text style={styles.controlText}>Overhead {overheadOn ? 'On' : 'Off'}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
 
-      {/* Living Room Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Living Room</Text>
-        <View style={styles.row}>
-          <View style={styles.control}>
-            <Text style={styles.tempText}>{livingRoomTemp}°</Text>
-            <Text style={styles.controlText}>
-              Thermostat Heating to {livingRoomTarget}°
-            </Text>
+        {/* Living Room Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Living Room</Text>
+          <View style={styles.row}>
+            <View style={styles.control}>
+              <Text style={styles.tempText}>{livingRoomTemp}°</Text>
+              <Text style={styles.controlText}>
+                Thermostat Heating to {livingRoomTarget}°
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.control}
+              onPress={() => toggleLight(setCeilingLightsOn)}>
+              <Icon name="lightbulb-o" size={30} color={ceilingLightsOn ? '#FFD60A' : '#8E8E93'} />
+              <Text style={styles.controlText}>
+                Ceiling Lights {ceilingLightsOn ? `${ceilingLightsBrightness}%` : 'Off'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.control}
+              onPress={() => toggleLight(setAccentLightsOn)}>
+              <Icon name="lightbulb-o" size={30} color={accentLightsOn ? '#FFD60A' : '#8E8E93'} />
+              <Text style={styles.controlText}>Accent Lights {accentLightsOn ? 'On' : 'Off'}</Text>
+            </TouchableOpacity>
           </View>
           <TouchableOpacity
             style={styles.control}
-            onPress={() => toggleLight(setCeilingLightsOn)}>
-            <Icon name="lightbulb-o" size={30} color={ceilingLightsOn ? '#FFD60A' : '#8E8E93'} />
-            <Text style={styles.controlText}>
-              Ceiling Lights {ceilingLightsOn ? `${ceilingLightsBrightness}%` : 'Off'}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.control}
-            onPress={() => toggleLight(setAccentLightsOn)}>
-            <Icon name="lightbulb-o" size={30} color={accentLightsOn ? '#FFD60A' : '#8E8E93'} />
-            <Text style={styles.controlText}>Accent Lights {accentLightsOn ? 'On' : 'Off'}</Text>
+            onPress={toggleFan}>
+            <Icon name="fan" size={30} color={smartFanOn ? '#34C759' : '#8E8E93'} />
+            <Text style={styles.controlText}>Smart Fan {smartFanOn ? 'On' : 'Off'}</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={styles.control}
-          onPress={toggleFan}>
-          <Icon name="fan" size={30} color={smartFanOn ? '#34C759' : '#8E8E93'} />
-          <Text style={styles.controlText}>Smart Fan {smartFanOn ? 'On' : 'Off'}</Text>
-        </TouchableOpacity>
-      </View>
 
-      {/* Kitchen Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Kitchen</Text>
-        <View style={styles.row}>
-          <View style={styles.control}>
-            <Text style={styles.tempText}>{kitchenTemp}°</Text>
-            <Text style={styles.controlText}>
-              Thermostat Cooling to {kitchenTarget}°
-            </Text>
+        {/* Kitchen Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Kitchen</Text>
+          <View style={styles.row}>
+            <View style={styles.control}>
+              <Text style={styles.tempText}>{kitchenTemp}°</Text>
+              <Text style={styles.controlText}>
+                Thermostat Cooling to {kitchenTarget}°
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.control}
+              onPress={() => toggleLight(setTableLightsOn)}>
+              <Icon name="lightbulb-o" size={30} color={tableLightsOn ? '#FFD60A' : '#8E8E93'} />
+              <Text style={styles.controlText}>Table Lights {tableLightsOn ? 'On' : 'Off'}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.control}
+              onPress={toggleSideDoor}>
+              <Icon name={sideDoorClosed ? 'door-closed' : 'door-open'} size={30} color={sideDoorClosed ? '#34C759' : '#FF2D55'} />
+              <Text style={styles.controlText}>Side Door {sideDoorClosed ? 'Closed' : 'Open'}</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={styles.control}
-            onPress={() => toggleLight(setTableLightsOn)}>
-            <Icon name="lightbulb-o" size={30} color={tableLightsOn ? '#FFD60A' : '#8E8E93'} />
-            <Text style={styles.controlText}>Table Lights {tableLightsOn ? 'On' : 'Off'}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.control}
-            onPress={toggleSideDoor}>
-            <Icon name={sideDoorClosed ? 'door-closed' : 'door-open'} size={30} color={sideDoorClosed ? '#34C759' : '#FF2D55'} />
-            <Text style={styles.controlText}>Side Door {sideDoorClosed ? 'Closed' : 'Open'}</Text>
-          </TouchableOpacity>
         </View>
       </View>
 
-      {/* Bottom Navigation */}
+      {/* Bottom Navigation (Fixed at Bottom) */}
       <View style={styles.bottomNav}>
         <TouchableOpacity>
           <Icon name="home" size={20} color="#8E8E93" />
@@ -155,6 +158,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
+  },
+  content: {
+    flex: 1, // Takes up remaining space above bottom nav
   },
   header: {
     flexDirection: 'row',
@@ -191,6 +197,8 @@ const styles = StyleSheet.create({
     padding: 10,
     width: '30%',
     alignItems: 'center',
+    marginVertical: 10,
+
   },
   controlText: {
     fontSize: 14,
@@ -205,10 +213,15 @@ const styles = StyleSheet.create({
   bottomNav: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: 10,
+    paddingVertical: 25,
     borderTopWidth: 1,
     borderTopColor: '#E5E5EA',
     backgroundColor: '#FFF',
+    position: 'absolute', // Fix position at bottom
+    bottom: 0,
+    left: 0,
+    right: 0,
+    marginBottom: 0,
   },
   navText: {
     fontSize: 12,
