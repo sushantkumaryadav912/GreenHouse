@@ -3,13 +3,15 @@ import { Text, Alert, TouchableOpacity, TextInput, View } from 'react-native';
 import styled from 'styled-components/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
-import { auth, db } from '../config/firebaseConfig.js'; // Added .js extension
-import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../config/firebaseConfig.js'; 
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+
 const LoginScreen = () => {
   const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setPasswordVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
 
   const handleLogin = async () => {
@@ -18,6 +20,7 @@ const LoginScreen = () => {
       return;
     }
 
+    setIsLoading(true);
     try {
       let email = emailOrUsername;
 
@@ -30,6 +33,7 @@ const LoginScreen = () => {
         const querySnapshot = await getDocs(q);
         if (querySnapshot.empty) {
           Alert.alert('Error', 'No user found with this username.');
+          setIsLoading(false);
           return;
         }
         const userDoc = querySnapshot.docs[0];
@@ -67,6 +71,8 @@ const LoginScreen = () => {
       }
       Alert.alert('Error', errorMessage);
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -114,8 +120,8 @@ const LoginScreen = () => {
 
         <ForgotPasswordText onPress={handleResetPassword}>Forgot password?</ForgotPasswordText>
 
-        <LoginButton onPress={handleLogin}>
-          <ButtonText>Log in</ButtonText>
+        <LoginButton onPress={handleLogin} disabled={isLoading}>
+          <ButtonText>{isLoading ? 'Logging in...' : 'Log in'}</ButtonText>
         </LoginButton>
 
         <SignUpWrapper>

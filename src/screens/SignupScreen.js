@@ -3,7 +3,7 @@ import { Text, Alert, TouchableOpacity, View } from 'react-native';
 import styled from 'styled-components/native';
 import { Picker } from '@react-native-picker/picker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { auth, db } from '../config/firebaseConfig'; 
+import { auth, db } from '../config/firebaseConfig.js'; 
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { signInWithEmailAndPassword } from 'firebase/auth';
