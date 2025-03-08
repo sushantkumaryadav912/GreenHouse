@@ -5,7 +5,7 @@ import Bottomnav from './Bottomnav';
 
 // Sample event data (fixed duplicate IDs)
 const eventsData = [
-  { id: '1', title: 'Tech Conference 2025', description: 'Join us for the latest in tech innovations and networking.', imageUrl: require('../../assets/del.png') },
+  { id: '1', title: 'Tech 2025', description: 'Join us for the latest in tech innovations and networking.', imageUrl: require('../../assets/del.png') },
   { id: '2', title: 'Spam', description: 'Pitch your ideas to investors and win funding!', imageUrl: require('../../assets/del.png') },
   { id: '3', title: ' ok', description: 'Code, collaborate, and compete for awesome prizes.', imageUrl: require('../../assets/del.png') },
   { id: '4', title: 'Entrepreneur Workshop', description: 'Learn business skills from industry experts.', imageUrl: require('../../assets/del.png') },
